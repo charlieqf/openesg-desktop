@@ -46,7 +46,6 @@ function verifyAssets(directory: string) {
       count += verifyAssets(relative)
       continue
     }
-    if (relative === "resources/esg/_headers") continue
     assert.equal(hash(read(relative)), hash(readFileSync(join(root, relative))), `Changed asset: ${relative}`)
     count++
   }

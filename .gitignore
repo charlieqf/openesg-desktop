@@ -35,4 +35,3 @@ tsconfig.tsbuildinfo
 
 # Isolated ESG interaction spike data; never commit credentials or sessions.
 .esg-prototype-runtime/
-packages/desktop/resources/esg/

@@ -18,7 +18,7 @@ node scripts/launch-esg.cjs
 [第一轮技术验证](C:/work/code/esg/docs/opencode-desktop-prototype-validation-20260911.md)。
 [宿主关系修订与复验](C:/work/code/esg/docs/opencode-desktop-host-review-20260911.md)。
 
-不要提交 `.esg-prototype-runtime`、运行日志、凭据、会话数据库或客户资料。原型资源首次从 `C:/work/code/esg/openesg/public` 复制到本仓库生成目录，原 HTML 仓库未修改。生成资源不能作为已经完成十五页桌面交互验收的证据。
+不要提交 `.esg-prototype-runtime`、运行日志、凭据、会话数据库或客户资料。原型资源最初从 `charlieqf/openesg` 的 `public/` 复制，现已作为桌面运行资源提交；原 HTML 仓库未修改。提交资源不能作为已经完成十五页桌面交互验收的证据。
 
 开发时通过原生菜单 View → Reload 加载 renderer-only 新构建；无需重启健康的本地服务。桥接脚本采用版本化资源入口，以免运行中的旧缓存遗漏新增显示元数据。当前上下文仍是完整正文预填，不是已实现的可折叠附件；紧凑编辑区的填满高度规则仅适用于新草稿，不修改真实消息时间线。
 
@@ -28,7 +28,7 @@ node scripts/launch-esg.cjs
 
 应用 ID `com.openesg.review`，数据目录 `%APPDATA%/OpenESGReview`；与开发原型、普通 OpenCode 分开，不注册 `opencode` 协议、不启用官方自动更新。安装包不含本机凭据、会话或日志。默认无可用 provider，评审范围仍是视觉和交互。
 
-在已有 Bun 1.3.14 依赖及准备好的 `resources/esg`、`resources/icons` 的开发环境中，从 `packages/desktop` 执行：
+HTML、样式、虚构数据及桌面桥接已经提交在 `packages/desktop/resources/esg`，无需另外克隆网页原型仓库。来源和筛选边界见 `packages/desktop/prototype/ESG-ASSETS.md`。在已有 Bun 1.3.14 依赖及 `resources/icons` 的开发环境中，从 `packages/desktop` 执行：
 
 ```text
 bun scripts/package-esg-review.ts

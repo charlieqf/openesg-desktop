@@ -20,6 +20,7 @@
     "package:mac": "electron-builder --mac --config electron-builder.config.ts",
     "package:win": "electron-builder --win --config electron-builder.config.ts",
     "package:esg-review": "bun scripts/package-esg-review.ts",
+    "test:esg-assets": "bun test prototype/esg-tests/state.test.cjs && bun test prototype/esg-tests/projects.test.cjs && bun test prototype/esg-tests/support.test.cjs && bun test prototype/review-package.test.ts",
     "package:linux": "electron-builder --linux --config electron-builder.config.ts",
     "native:build": "bun install --cwd native"
   },

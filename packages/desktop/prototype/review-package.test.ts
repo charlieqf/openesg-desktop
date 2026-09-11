@@ -1,4 +1,5 @@
 import { describe, expect, test } from "bun:test"
+import { readdir } from "node:fs/promises"
 import config from "./electron-builder.review.config"
 
 const runtime = await Bun.file(new URL("./review-runtime.ts", import.meta.url)).text()
@@ -6,6 +7,7 @@ const entry = await Bun.file(new URL("./review-entry.ts", import.meta.url)).text
 const main = await Bun.file(new URL("../src/main/index.ts", import.meta.url)).text()
 const build = await Bun.file(new URL("./electron.review.config.ts", import.meta.url)).text()
 const updater = await Bun.file(new URL("../src/main/constants.ts", import.meta.url)).text()
+const assets = new URL("../resources/esg/", import.meta.url)
 
 describe("internal Windows review distribution", () => {
   test("uses a separate installer identity, version and no registered protocol", () => {
@@ -42,5 +44,18 @@ describe("internal Windows review distribution", () => {
     expect(config.files).toContain("resources/esg/assets/**/*")
     expect(JSON.stringify(config.files)).not.toContain(".esg-prototype-runtime")
     expect(config.extraMetadata?.main).toBe("out/main/index.js")
+  })
+  test("vendors the complete desktop prototype without web-host deployment files", async () => {
+    const files = (await readdir(assets, { recursive: true })).map((file) => file.replaceAll("\\", "/"))
+    const pages = files.filter((file) => file.endsWith(".html"))
+    expect(pages).toHaveLength(15)
+    expect(files).not.toContain("_headers")
+    expect(files).toContain("assets/demo-data.js")
+    expect(files).toContain("assets/desktop-bridge.js")
+    expect(files).toContain("assets/demo-files/drafts/ENV-001.md")
+    for (const page of pages) {
+      const html = await Bun.file(new URL(page, assets)).text()
+      expect(html.match(/assets\/desktop-bridge\.js\?v=panel-20260911/g)).toHaveLength(1)
+    }
   })
 })
