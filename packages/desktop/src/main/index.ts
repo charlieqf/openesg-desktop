@@ -3,7 +3,7 @@ import { mkdirSync, rmSync } from "node:fs"
 import * as http from "node:http"
 import { createServer } from "node:net"
 import { homedir, tmpdir } from "node:os"
-import { join } from "node:path"
+import { join, resolve } from "node:path"
 import { getCACertificates, setDefaultCACertificates } from "node:tls"
 import type { Event } from "electron"
 import { app, BrowserWindow } from "electron"
@@ -62,6 +62,9 @@ const APP_IDS: Record<string, string> = {
 }
 const TEST_ONBOARDING = process.env.OPENCODE_TEST_ONBOARDING === "1"
 const SIDECAR_VERSION = process.env.OPENCODE_SIDECAR_V2 === "1" ? "v2" : "v1"
+const esgRoot = process.env.OPENCODE_ESG_PROTOTYPE_ROOT
+  ? resolve(process.env.OPENCODE_ESG_PROTOTYPE_ROOT)
+  : undefined
 const jsCallStackFeature = "DocumentPolicyIncludeJSCallStacksInCrashReports"
 
 let logger: ReturnType<typeof initLogging>
@@ -122,7 +125,19 @@ const main = Effect.gen(function* () {
 
   process.env.OPENCODE_DISABLE_EMBEDDED_WEB_UI = "true"
 
-  const appId = app.isPackaged ? APP_IDS[CHANNEL] : "ai.opencode.desktop.dev"
+  const review = process.env.OPENCODE_ESG_REVIEW === "1"
+  const appId = review ? "com.openesg.review" : esgRoot ? "ai.opencode.desktop.esg-prototype" : app.isPackaged ? APP_IDS[CHANNEL] : "ai.opencode.desktop.dev"
+  if (esgRoot) {
+    ;["data", "config", "cache", "state", "desktop", "session", "workspace"].forEach((dir) =>
+      mkdirSync(join(esgRoot, dir), { recursive: true }),
+    )
+    process.env.XDG_DATA_HOME = join(esgRoot, "data")
+    process.env.XDG_CONFIG_HOME = join(esgRoot, "config")
+    process.env.XDG_CACHE_HOME = join(esgRoot, "cache")
+    process.env.XDG_STATE_HOME = join(esgRoot, "state")
+    process.env.OPENCODE_CONFIG_CONTENT = JSON.stringify({ enabled_providers: [], autoupdate: false })
+    process.chdir(join(esgRoot, "workspace"))
+  }
   const onboardingTestRoot = ((): string | undefined => {
     if (!TEST_ONBOARDING) return
 
@@ -138,13 +153,14 @@ const main = Effect.gen(function* () {
     process.env.XDG_STATE_HOME = join(root, "state")
     return root
   })()
-  app.setName(app.isPackaged ? APP_NAMES[CHANNEL] : "OpenCode Dev")
+  app.setName(review ? "OpenESG Review" : app.isPackaged ? APP_NAMES[CHANNEL] : "OpenCode Dev")
   app.setAppUserModelId(appId)
   app.setPath(
     "userData",
-    onboardingTestRoot ? join(onboardingTestRoot, "desktop") : join(app.getPath("appData"), appId),
+    esgRoot ? join(esgRoot, "desktop") : onboardingTestRoot ? join(onboardingTestRoot, "desktop") : join(app.getPath("appData"), appId),
   )
   if (onboardingTestRoot) app.setPath("sessionData", join(onboardingTestRoot, "session"))
+  if (esgRoot) app.setPath("sessionData", join(esgRoot, "session"))
   initializeOldLayoutEligibility(app.getPath("userData"))
   logger = initLogging()
   initCrashReporter()
@@ -254,7 +270,7 @@ const main = Effect.gen(function* () {
 
   yield* Effect.promise(() => app.whenReady())
 
-  if (!TEST_ONBOARDING) migrate()
+  if (!TEST_ONBOARDING && !esgRoot) migrate()
   yield* Effect.promise(() => cleanupStoreFiles(app.getPath("userData"))).pipe(
     Effect.tap((result) =>
       Effect.sync(() => {
@@ -268,7 +284,7 @@ const main = Effect.gen(function* () {
       }),
     ),
   )
-  app.setAsDefaultProtocolClient("opencode")
+  if (!esgRoot) app.setAsDefaultProtocolClient("opencode")
   registerRendererProtocol()
   setDockIcon()
   const updater = setupAutoUpdater(stopSidecars)

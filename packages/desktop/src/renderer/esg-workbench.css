@@ -1,0 +1,56 @@
+/* Opt-in workspace styles. The upstream titlebar and native routes own the app. */
+.esg-workspace-entry{height:28px;flex-shrink:0;display:flex;align-items:center;gap:7px;padding:0 12px;border-radius:6px;font-size:12px;color:var(--text-base,#c7cbd0);background:transparent;cursor:pointer;-webkit-app-region:no-drag}
+.esg-workspace-entry:hover{background:#72948a20}.esg-workspace-entry[aria-pressed=true]{background:#32816d28;color:#59bda0;box-shadow:inset 0 -2px #59bda0}
+.esg-workspace-entry span{font-size:17px}.esg-workspace-entry:focus-visible,.esg-workspace button:focus-visible{outline:2px solid #59bda0;outline-offset:-2px}
+.esg-workspace{position:relative;width:100%;flex:1;min-height:0;min-width:0;display:grid;grid-template-columns:minmax(0,1fr);overflow:hidden}
+.esg-workspace[data-view=split][data-layout=side-by-side]{grid-template-columns:minmax(0,1fr) minmax(min(380px,42%),34%)}
+.esg-workspace[data-view=split][data-layout=stacked]{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr) minmax(min(280px,50%),42%)}
+.esg-html-pane,.esg-native-pane{min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+.esg-html-pane[hidden],.esg-native-pane[hidden]{display:none!important}
+.esg-workspace-toolbar{min-height:42px;flex-shrink:0;display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;padding:6px 16px;background:#edf2ef;color:#567068;border-bottom:1px solid #d6e1dc;font:12px Inter,"Microsoft YaHei",sans-serif}
+.esg-workspace-toolbar b{color:#254e40;font-weight:600}.esg-workspace-divider{margin:0 10px;color:#9aaea4}.esg-workspace-toolbar small{margin-left:auto;font-size:10px}.esg-workspace-toolbar button{font-size:11px;color:#13765b;cursor:pointer}
+.esg-layout-switch{display:flex;flex-shrink:0;gap:2px;padding:2px;background:#dce7e1;border:1px solid #c8d8ce;border-radius:6px}
+.esg-layout-switch button{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;white-space:nowrap;color:#476257}
+.esg-layout-switch button:hover{background:#ffffff80}.esg-layout-switch button[aria-pressed=true]{background:#fff;color:#17674e;box-shadow:0 1px 3px #153b2220;font-weight:600}
+.esg-layout-icon{width:14px;height:12px;border:1px solid currentColor;border-radius:2px;position:relative}
+.esg-layout-icon:after{content:"";position:absolute;inset:0 0 0 55%;border-left:1px solid currentColor;background:#32816d25}
+.esg-layout-icon-stacked:after{inset:50% 0 0;border-left:0;border-top:1px solid currentColor}
+.esg-layout-icon-floating:after{inset:3px -3px -3px 4px;border:1px solid currentColor;border-radius:1px;background:#edf2ef}
+.esg-layout-notice{flex-basis:100%;font-size:11px;color:#8b541a}
+.esg-iframe-region{flex:1;min-height:0;overflow:hidden}.esg-iframe-region iframe{width:100%;height:100%;border:0;display:block}
+.esg-native-pane{isolation:isolate}.esg-workspace[data-view=split] .esg-native-pane{border-left:1px solid #66766e55}
+.esg-workspace[data-view=split][data-layout=stacked] .esg-native-pane{border-left:0;border-top:1px solid #66766e55}
+.esg-workspace[data-view=split][data-layout=floating] .esg-native-pane{position:absolute;z-index:20;border:1px solid #7c9c8e;border-radius:12px;background:var(--background-base,#fafafa);box-shadow:0 18px 55px #102c3040,0 3px 12px #102c3020}
+.esg-floating-toolbar{flex-shrink:0;display:flex;align-items:center;gap:8px;padding:6px 10px;background:#e3eee7;border-bottom:1px solid #c1d4c8;color:#244b3b;font:12px Inter,"Microsoft YaHei",sans-serif}
+.esg-floating-drag{flex:1;min-width:0;display:flex;align-items:center;gap:8px;padding:6px 2px;text-align:left;cursor:grab;touch-action:none;user-select:none}.esg-floating-drag:active{cursor:grabbing}.esg-floating-drag>span{font-size:20px;line-height:1}
+.esg-floating-dock{flex-shrink:0;padding:5px 8px;border:1px solid #b3cbbd;border-radius:5px;cursor:pointer;background:#fff8}
+.esg-floating-resize{position:absolute;right:0;bottom:0;z-index:2;width:24px;height:24px;display:grid;place-items:center;border-radius:8px 0 0 0;color:#457963;background:#e3eee7;cursor:nwse-resize;touch-action:none;user-select:none}
+.esg-workspace[data-floating-interaction=true]{user-select:none}.esg-workspace[data-floating-interaction=true] iframe{pointer-events:none}
+.esg-native-content{position:relative;flex:1;min-height:0;min-width:0;display:flex;flex-direction:column;transform:translateZ(0);overflow:hidden;container-type:size;container-name:esg-conversation}
+.esg-native-content .h-dvh{height:100%}.esg-native-content .w-screen{width:100%}
+.esg-conversation-context{display:flex;flex-shrink:0;flex-wrap:wrap;align-items:center;gap:6px 10px;padding:8px 12px;border-bottom:1px solid #66766e55;background:#32816d10;font:12px Inter,"Microsoft YaHei",sans-serif}
+.esg-conversation-context>div:first-child{display:flex;flex:1;min-width:min(210px,100%);flex-direction:column;gap:3px}.esg-conversation-context strong{font-size:13px;line-height:18px;color:var(--text-strong,#dce4de);overflow-wrap:anywhere}.esg-context-kind{font-size:10px;font-weight:400;opacity:.65;margin-left:8px;white-space:nowrap}.esg-conversation-context small{font-size:10px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.esg-conversation-actions{display:flex;flex-shrink:0;gap:6px}.esg-conversation-actions button{border:1px solid #66766e55;border-radius:5px;padding:5px 9px;cursor:pointer;font-size:11px;white-space:nowrap}.esg-conversation-actions button:hover{background:#32816d20}
+@media(max-width:1500px){.esg-conversation-context{padding:8px 16px}.esg-context-eyebrow{display:none}.esg-workspace-toolbar .esg-prototype-notice{display:none}.esg-layout-switch{margin-left:auto}}
+/* Only the embedded NEW draft is a fill-height editor. Real message timelines and
+   full-page native routes retain their upstream layout. Keep every footer in flow;
+   no height threshold may bring the welcome hero or absolute provider tip back. */
+.esg-workspace[data-view=split] [data-component="session-new-design"]{display:flex;flex-direction:column;overflow-y:auto;border-radius:0}
+.esg-workspace[data-view=split] [data-component="session-new-design"]>div:first-child{position:relative;top:auto;flex:1 0 auto;min-height:150px;padding:10px 12px;align-items:stretch}
+.esg-workspace[data-view=split] [data-component="session-new-design"]>div:first-child>div{max-width:none;min-width:0;display:flex;flex-direction:column}
+.esg-workspace[data-view=split] [data-component="session-new-design"]>div:first-child>div>svg{display:none}
+.esg-workspace[data-view=split] [data-component="session-new-design"]>div:first-child>div>.mt-8{margin-top:0;gap:8px;flex:1;min-height:0}
+.esg-workspace[data-view=split] [data-component="session-new-design"] .mt-8>div:first-child{flex:1;min-height:112px}
+.esg-workspace[data-view=split] [data-component="session-new-design"] .mt-8>div:first-child>div{height:auto;flex:1;min-height:112px}
+.esg-workspace[data-view=split] [data-component="session-new-design"] [data-component="prompt-input-v2"]{display:flex;flex-direction:column;flex:1;min-height:112px}
+.esg-workspace[data-view=split] [data-component="session-new-design"] [data-component="prompt-input-v2"]>div:has(>[data-component="prompt-input"]){flex:1;min-height:60px}
+.esg-workspace[data-view=split] [data-component="session-new-design"] [data-component="prompt-input"]{position:absolute;inset:0;max-height:none;min-height:60px;height:100%;overflow-y:auto;padding-top:12px}
+.esg-workspace[data-view=split] [data-component="session-new-design"] [data-component="prompt-input-v2"]>.h-11{flex-shrink:0}
+.esg-workspace[data-view=split] [data-component="session-new-design"] [data-component="prompt-input-v2-attachments"]{max-height:90px;overflow-y:auto;flex-shrink:0}
+.esg-workspace[data-view=split] [data-component="session-new-design"]>.pointer-events-none{display:none}
+.esg-workspace[data-view=split] [data-component="session-new-design"] .mt-8>.min-h-7{display:none}
+.esg-workspace[data-view=split][data-environment=true] [data-component="session-new-design"] .mt-8>.min-h-7{display:flex;flex-direction:row;flex-wrap:wrap;flex-shrink:0;justify-content:flex-start;gap:2px;max-height:96px;overflow-y:auto}
+.esg-conversation-tools{display:none}
+.esg-workspace[data-view=split] .esg-native-pane:has([data-component="session-new-design"]) .esg-conversation-tools{display:flex;flex-shrink:0;align-items:center;justify-content:space-between;gap:8px;min-height:30px;padding:3px 36px 5px 12px;border-top:1px solid #66766e25;color:var(--text-base,#697971);font:11px Inter,"Microsoft YaHei",sans-serif}
+.esg-conversation-tools small{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px;opacity:.7}
+.esg-conversation-tools button{flex-shrink:0;padding:3px 5px;border-radius:4px;cursor:pointer;white-space:nowrap}.esg-conversation-tools button:hover{background:#32816d20}

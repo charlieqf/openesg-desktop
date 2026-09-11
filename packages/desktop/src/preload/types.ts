@@ -43,6 +43,7 @@ export type FatalRendererError = {
 }
 
 export type ElectronAPI = {
+  esgPrototypeConfig: () => Promise<{ directory: string } | null>
   killSidecar: () => Promise<void>
   installCli: () => Promise<string>
   awaitInitialization: () => Promise<ServerReadyData>

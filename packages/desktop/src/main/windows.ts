@@ -293,13 +293,15 @@ export function registerRendererProtocol() {
 
   protocol.handle(rendererProtocol, async (request) => {
     const url = new URL(request.url)
-    if (url.host !== rendererHost) {
+    const esg = !!process.env.OPENCODE_ESG_PROTOTYPE_ROOT && url.host === "esg"
+    if (url.host !== rendererHost && !esg) {
       writeLog("protocol", "rejected host", { url: request.url }, "warn")
       return new Response("Not found", { status: 404 })
     }
 
-    const file = resolve(rendererRoot, `.${decodeURIComponent(url.pathname)}`)
-    const rel = relative(rendererRoot, file)
+    const assetRoot = esg ? join(root, "../../resources/esg") : rendererRoot
+    const file = resolve(assetRoot, `.${decodeURIComponent(url.pathname)}`)
+    const rel = relative(assetRoot, file)
     if (rel.startsWith("..") || isAbsolute(rel)) {
       writeLog("protocol", "rejected path", { url: request.url, file }, "warn")
       return new Response("Not found", { status: 404 })
@@ -322,6 +324,11 @@ export function registerRendererProtocol() {
           },
           "error",
         )
+      }
+      if (esg) {
+        const headers = new Headers(response.headers)
+        headers.set("Content-Security-Policy", "default-src 'self' data: blob:; script-src 'self'; style-src 'self' 'unsafe-inline'; connect-src 'none'; frame-ancestors oc://renderer; form-action 'none'")
+        return new Response(response.body, { status: response.status, headers })
       }
       return addDocumentPolicy(response, file)
     } catch (error) {

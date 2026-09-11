@@ -19,7 +19,7 @@ import type { UpdaterState } from "@opencode-ai/app/updater"
 import * as Sentry from "@sentry/solid"
 import type { AsyncStorage } from "@solid-primitives/storage"
 import { createMemoryHistory, MemoryRouter, type BaseRouterProps } from "@solidjs/router"
-import { createEffect, createMemo, createResource, createSignal, onCleanup, Show } from "solid-js"
+import { createEffect, createMemo, createResource, createSignal, onCleanup, Show, type ParentProps } from "solid-js"
 import { render } from "solid-js/web"
 import pkg from "../../package.json"
 import { t } from "./i18n"
@@ -31,6 +31,7 @@ import { availableStartupServer, readyWslConnections } from "./wsl/connections"
 import "./styles.css"
 import { Splash } from "@opencode-ai/ui/logo"
 import { useTheme } from "@opencode-ai/ui/theme/context"
+import { ESGWorkbench, ESGSessionBridge, ESGEntry, esgWorkbenchActive, openNativeWorkspace } from "./esg-workbench"
 
 const root = document.getElementById("root")
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -333,6 +334,7 @@ function LoadingSplash() {
 
 function DesktopRoot(props: { windowState: DesktopWindowState }) {
   const platform = createPlatform(props.windowState)
+  const [esg] = createResource(() => window.api.esgPrototypeConfig())
   const loadLocale = async () => {
     const current = await platform.storage?.("opencode.global.dat").getItem("language")
     const legacy = current ? undefined : await platform.storage?.().getItem("language.v1")
@@ -370,7 +372,7 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
       }
     })
 
-    return null
+    return <Show when={esg.latest}><ESGSessionBridge /></Show>
   }
 
   function App() {
@@ -405,6 +407,12 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
         <Show when={effectiveDefaultServer()} keyed>
           {(key) => (
             <AppInterface
+              workspace={esg.latest ? {
+                entry: <ESGEntry />,
+                active: esgWorkbenchActive,
+                onNativeNavigate: openNativeWorkspace,
+                component: Workbench,
+              } : undefined}
               defaultServer={key}
               servers={servers()}
               router={router}
@@ -424,13 +432,19 @@ function DesktopRoot(props: { windowState: DesktopWindowState }) {
     )
   }
 
+  function Workbench(props: ParentProps) {
+    return <ESGWorkbench directory={esg.latest!.directory}>{props.children}</ESGWorkbench>
+  }
+
   return (
     <PlatformProvider value={platform}>
       <AppBaseProviders
         locale={locale.latest}
         onNativeTranslations={(bundle) => void window.api.setNativeTranslations(bundle).catch(() => undefined)}
       >
-        <Show when={true}>{(_) => <App />}</Show>
+        <Show when={!esg.loading}>
+          <App />
+        </Show>
       </AppBaseProviders>
     </PlatformProvider>
   )

@@ -31,6 +31,10 @@ export function isFirstLaunchOnboardingPending() {
 }
 
 export async function finishFirstLaunchOnboarding(createDefaultProject: boolean) {
+  if (process.env.OPENCODE_ESG_PROTOTYPE_ROOT) {
+    getStore().set(FIRST_LAUNCH_ONBOARDING_COMPLETE_KEY, true)
+    return null
+  }
   if (!isFirstLaunchOnboardingPending()) {
     writeLog("onboarding", "first launch onboarding already completed")
     return null

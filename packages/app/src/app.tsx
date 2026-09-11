@@ -59,7 +59,7 @@ import { SDKProvider, useSDK } from "@/context/sdk"
 import { WslServersProvider } from "@/wsl/context"
 import DirectoryLayout, { DirectoryDataProvider } from "@/pages/directory-layout"
 import LegacyLayout from "@/pages/layout"
-import NewLayout from "@/pages/layout-new"
+import NewLayout, { type WorkspaceSlots } from "@/pages/layout-new"
 import { ErrorPage } from "./pages/error"
 import { useCheckServerHealth } from "./utils/server-health"
 import { legacySessionHref, legacySessionServer, requireServerKey, sessionHref } from "./utils/session-route"
@@ -368,11 +368,11 @@ function LegacyServerScopedShell(props: ServerScopedShellProps) {
   )
 }
 
-function NewAppLayout(props: ParentProps<{ serverScoped?: JSX.Element }>) {
+function NewAppLayout(props: ParentProps<{ serverScoped?: JSX.Element; workspace?: WorkspaceSlots }>) {
   return (
     <SelectedServerProviders>
       <ServerScopedProviders serverScoped={props.serverScoped}>
-        <NewLayout>{props.children}</NewLayout>
+        <NewLayout workspace={props.workspace}>{props.children}</NewLayout>
       </ServerScopedProviders>
     </SelectedServerProviders>
   )
@@ -555,6 +555,7 @@ function ServerKey(props: ParentProps) {
 }
 
 export function AppInterface(props: {
+  workspace?: WorkspaceSlots
   children?: JSX.Element
   defaultServer: ServerConnection.Key
   canonicalLocalServer?: ServerConnection.Key
@@ -594,7 +595,7 @@ export function AppInterface(props: {
                       <NotificationProvider>
                         <ServerShell>
                           <Show when={useSettings().general.newLayoutDesigns()} fallback={routerProps.children}>
-                            <NewAppLayout serverScoped={props.serverScoped}>{routerProps.children}</NewAppLayout>
+                            <NewAppLayout serverScoped={props.serverScoped} workspace={props.workspace}>{routerProps.children}</NewAppLayout>
                           </Show>
                         </ServerShell>
                       </NotificationProvider>

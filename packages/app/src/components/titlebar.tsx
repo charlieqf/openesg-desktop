@@ -9,6 +9,7 @@ import {
   Show,
   Switch,
   untrack,
+  type JSX,
 } from "solid-js"
 import { createStore } from "solid-js/store"
 import { useLocation, useNavigate, useParams } from "@solidjs/router"
@@ -61,7 +62,11 @@ export function useTitlebarRightMount() {
   return mount
 }
 
-export function Titlebar(props: { update?: TitlebarUpdate; debugTools?: { visible: boolean; toggle: () => void } }) {
+export function Titlebar(props: {
+  update?: TitlebarUpdate
+  debugTools?: { visible: boolean; toggle: () => void }
+  workspace?: { entry: JSX.Element; active: () => boolean; onNativeNavigate: () => void }
+}) {
   const layout = useLayout()
   const platform = usePlatform()
   const command = useCommand()
@@ -262,6 +267,7 @@ export function Titlebar(props: { update?: TitlebarUpdate; debugTools?: { visibl
             })
 
             const openNewTab = () => {
+              props.workspace?.onNativeNavigate()
               const route = layout.route()
               const activeSession = session()
               if (route.type === "session" && activeSession) {
@@ -311,7 +317,15 @@ export function Titlebar(props: { update?: TitlebarUpdate; debugTools?: { visibl
 
               tabs.newDraft({ server: fallback.server, directory: fallback.project.worktree }, "")
             }
-            const toggleHome = () => tabs.toggleHome({ home: layout.route().type === "home", current: currentTab() })
+            const toggleHome = () => {
+              const workspaceActive = props.workspace?.active()
+              props.workspace?.onNativeNavigate()
+              if (workspaceActive) {
+                navigate("/")
+                return
+              }
+              tabs.toggleHome({ home: layout.route().type === "home", current: currentTab() })
+            }
 
             command.register("titlebar-home", () => [
               {
@@ -388,19 +402,21 @@ export function Titlebar(props: { update?: TitlebarUpdate; debugTools?: { visibl
                     size="large"
                     class="!w-9 shrink-0"
                     icon={<IconV2 name="grid-plus" />}
-                    state={layout.route().type === "home" ? "pressed" : undefined}
+                    state={!props.workspace?.active() && layout.route().type === "home" ? "pressed" : undefined}
                     onClick={toggleHome}
                     aria-label={language.t("home.title")}
-                    aria-pressed={layout.route().type === "home"}
+                    aria-pressed={!props.workspace?.active() && layout.route().type === "home"}
                   />
                 </TooltipV2>
 
+                {props.workspace?.entry}
                 <TitlebarTabStrip
                   tabs={tabsStore}
-                  currentTab={currentTab}
+                  currentTab={() => props.workspace?.active() ? undefined : currentTab()}
                   forceTruncate={tabsAreOverflowing()}
                   onOverflowChange={setTabsAreOverflowing}
                   onNavigate={(tab, el) => {
+                    props.workspace?.onNativeNavigate()
                     tabs.select(tab)
                     el?.scrollIntoView({ behavior: "instant" })
                   }}
